@@ -27,8 +27,8 @@ export default function Header() {
           <Link href="/">Contact Us</Link>
         </nav>
         <nav className="flex items-center gap-4 font-semibold">
-          <Link href="/">Login</Link>
-          <Link href="/">Register</Link>
+          <Link href="/login">Login</Link>
+          <Link href="/register">Register</Link>
         </nav>
       </div>
     </header>
