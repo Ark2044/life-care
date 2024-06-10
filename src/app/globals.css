@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 select,
+input[type="number"],
 input[type="email"],
 input[type="password"],
 input[type="tel"],
@@ -11,6 +12,8 @@ input[type="text"] {
   @apply border p-2 border-gray-300 bg-gray-100;
 }
 
+option[value=""]:disabled,
+input[type="number"]:disabled,
 input[type="email"]:disabled,
 input[type="password"]:disabled,
 input[type="tel"]:disabled,
@@ -49,4 +52,16 @@ div.tabs > * {
 
 div.tabs > *.active {
   @apply bg-primary text-white;
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+      display: none;
+  }
+ /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+}
 }
