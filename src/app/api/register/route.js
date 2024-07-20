@@ -1,5 +1,5 @@
-import { Patient } from "@/models/Patient";
-import { Doctor } from "@/models/Doctor";
+import { Patient } from "../../../models/Patient";
+import { Doctor } from "../../../models/Doctor";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 

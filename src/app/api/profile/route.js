@@ -5,12 +5,14 @@ import { UserInfo } from "../../../models/UserInfo";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 
+// Connect to the database
 async function connectToDatabase() {
   if (mongoose.connection.readyState !== 1) {
     await mongoose.connect(process.env.MONGO_URL);
   }
 }
 
+// PUT request handler
 export async function PUT(req) {
   try {
     await connectToDatabase();
@@ -30,29 +32,38 @@ export async function PUT(req) {
     await UserInfo.updateOne(filter, { role });
 
     let model;
-    if (role === 'doctor') {
+    if (role === "doctor") {
       model = Doctor;
-    } else if (role === 'patient') {
+    } else if (role === "patient") {
       model = Patient;
     } else {
-      return new Response(JSON.stringify({ error: 'Invalid role specified' }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Invalid role specified" }), {
+        status: 400,
+      });
     }
 
     const user = await model.findOne(filter);
     if (!user) {
-      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+      });
     }
 
     await model.updateOne(filter, { fname, lname, image });
-    await model.findOneAndUpdate({ email: user.email }, otherInfo, { upsert: true });
+    await model.findOneAndUpdate({ email: user.email }, otherInfo, {
+      upsert: true,
+    });
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
   } catch (error) {
-    console.error('Error updating profile:', error);
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+    console.error("Error updating profile:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+    });
   }
 }
 
+// GET request handler
 export async function GET(req) {
   try {
     await connectToDatabase();
@@ -76,26 +87,34 @@ export async function GET(req) {
     // Fetch role from UserInfo
     const userInfo = await UserInfo.findOne(filterUser).lean();
     if (!userInfo) {
-      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+      });
     }
 
     let model;
-    if (userInfo.role === 'doctor') {
+    if (userInfo.role === "doctor") {
       model = Doctor;
-    } else if (userInfo.role === 'patient') {
+    } else if (userInfo.role === "patient") {
       model = Patient;
     } else {
-      return new Response(JSON.stringify({ error: 'Invalid role specified' }), { status: 400 });
+      return new Response(JSON.stringify({ error: "Invalid role specified" }), {
+        status: 400,
+      });
     }
 
     const user = await model.findOne(filterUser).lean();
     if (!user) {
-      return new Response(JSON.stringify({ error: 'User not found' }), { status: 404 });
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+      });
     }
 
     return new Response(JSON.stringify(user), { status: 200 });
   } catch (error) {
-    console.error('Error fetching profile:', error);
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), { status: 500 });
+    console.error("Error fetching profile:", error);
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
+      status: 500,
+    });
   }
 }
