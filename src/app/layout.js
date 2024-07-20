@@ -1,10 +1,11 @@
-import { AppProvider } from "@/components/AppContext";
+import { AppProvider } from "../components/AppContext";
+import { EdgeStoreProvider } from "../libs/edgestore";
 import { Roboto } from "next/font/google";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import ScrollToTopButton from "@/components/layout/ScrollToTopButton";
+import ScrollToTopButton from "../components/layout/ScrollToTopButton";
 
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
@@ -17,15 +18,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={roboto.className}>
-        <AppProvider>
-          <Toaster />
-          <Header />
-          <main className="max-w-4xl mx-auto p-4">
-            {children}
-            <ScrollToTopButton />
-          </main>
-          <Footer />
-        </AppProvider>
+        <EdgeStoreProvider>
+          <AppProvider>
+            <Toaster />
+            <Header />
+            <main className="ml-64 p-4">
+              {/* ml-64 applies a left margin to compensate for the fixed sidebar width */}
+              {children}
+              <ScrollToTopButton />
+            </main>
+            <Footer />
+          </AppProvider>
+        </EdgeStoreProvider>
       </body>
     </html>
   );

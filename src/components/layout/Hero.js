@@ -5,7 +5,6 @@ export default function Hero() {
     <>
       <div className="flex items-center justify-evenly gap-32">
         <div className="al">
-          <div>CLOUD-BASED HEALTHCARE SOFTWARE AND SERVICES</div>
           <div className="bg-violet-950 max-w-xs p-4 mt-2 rounded-e-full text-white text-4xl">
             HEALTHCARE
           </div>
