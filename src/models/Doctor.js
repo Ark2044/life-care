@@ -11,6 +11,8 @@ const DoctorSchema = new Schema(
     experience: { type: String },
     password: { type: String },
     image: { type: String },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    userInfo: { type: Schema.Types.ObjectId, ref: 'UserInfo' },
   },
   { timestamps: true }
 );

@@ -50,7 +50,7 @@ export async function PUT(req) {
     }
 
     await model.updateOne(filter, { fname, lname, image });
-    await model.findOneAndUpdate({ email: user.email }, otherInfo, {
+    await UserInfo.findOneAndUpdate({ email: user.email }, otherInfo, {
       upsert: true,
     });
 
@@ -70,7 +70,6 @@ export async function GET(req) {
 
     const url = new URL(req.url);
     const _id = url.searchParams.get("_id");
-    const role = url.searchParams.get("role");
 
     let filterUser = {};
     if (_id) {
@@ -84,7 +83,6 @@ export async function GET(req) {
       filterUser = { email };
     }
 
-    // Fetch role from UserInfo
     const userInfo = await UserInfo.findOne(filterUser).lean();
     if (!userInfo) {
       return new Response(JSON.stringify({ error: "User not found" }), {
@@ -104,13 +102,14 @@ export async function GET(req) {
     }
 
     const user = await model.findOne(filterUser).lean();
+    
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,
       });
     }
 
-    return new Response(JSON.stringify(user), { status: 200 });
+    return new Response(JSON.stringify({ ...user, ...userInfo }), { status: 200 });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
