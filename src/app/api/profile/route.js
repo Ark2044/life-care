@@ -1,119 +1,52 @@
 import { authOptions } from "../../../libs/authOptions";
-import { Doctor } from "../../../models/Doctor";
-import { Patient } from "../../../models/Patient";
 import { UserInfo } from "../../../models/UserInfo";
+import { User } from "../../../models/User";
 import mongoose from "mongoose";
 import { getServerSession } from "next-auth";
 
-// Connect to the database
-async function connectToDatabase() {
-  if (mongoose.connection.readyState !== 1) {
-    await mongoose.connect(process.env.MONGO_URL);
-  }
-}
-
-// PUT request handler
 export async function PUT(req) {
-  try {
-    await connectToDatabase();
-    const data = await req.json();
-    const { _id, role, fname, lname, image, ...otherInfo } = data;
+  mongoose.connect(process.env.MONGO_URL);
+  const data = await req.json();
+  const { _id, name, image, ...otherUserInfo } = data;
 
-    let filter = {};
-    if (_id) {
-      filter = { _id };
-    } else {
-      const session = await getServerSession(authOptions);
-      const email = session.user.email;
-      filter = { email };
-    }
-
-    // Update UserInfo
-    await UserInfo.updateOne(filter, { role });
-
-    let model;
-    if (role === "doctor") {
-      model = Doctor;
-    } else if (role === "patient") {
-      model = Patient;
-    } else {
-      return new Response(JSON.stringify({ error: "Invalid role specified" }), {
-        status: 400,
-      });
-    }
-
-    const user = await model.findOne(filter);
-    if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-      });
-    }
-
-    await model.updateOne(filter, { fname, lname, image });
-    await UserInfo.findOneAndUpdate({ email: user.email }, otherInfo, {
-      upsert: true,
-    });
-
-    return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-    });
+  let filter = {};
+  if (_id) {
+    filter = { _id };
+  } else {
+    const session = await getServerSession(authOptions);
+    const email = session.user.email;
+    filter = { email };
   }
+
+  const user = await User.findOne(filter);
+  await User.updateOne(filter, { name, image });
+  await UserInfo.findOneAndUpdate({ email: user.email }, otherUserInfo, {
+    upsert: true,
+  });
+
+  return Response.json(true);
 }
 
-// GET request handler
 export async function GET(req) {
-  try {
-    await connectToDatabase();
+  mongoose.connect(process.env.MONGO_URL);
 
-    const url = new URL(req.url);
-    const _id = url.searchParams.get("_id");
+  const url = new URL(req.url);
+  const _id = url.searchParams.get("_id");
 
-    let filterUser = {};
-    if (_id) {
-      filterUser = { _id };
-    } else {
-      const session = await getServerSession(authOptions);
-      const email = session?.user?.email;
-      if (!email) {
-        return new Response(JSON.stringify({}), { status: 200 });
-      }
-      filterUser = { email };
+  let filterUser = {};
+  if (_id) {
+    filterUser = { _id };
+  } else {
+    const session = await getServerSession(authOptions);
+    const email = session?.user?.email;
+    if (!email) {
+      return Response.json({});
     }
-
-    const userInfo = await UserInfo.findOne(filterUser).lean();
-    if (!userInfo) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-      });
-    }
-
-    let model;
-    if (userInfo.role === "doctor") {
-      model = Doctor;
-    } else if (userInfo.role === "patient") {
-      model = Patient;
-    } else {
-      return new Response(JSON.stringify({ error: "Invalid role specified" }), {
-        status: 400,
-      });
-    }
-
-    const user = await model.findOne(filterUser).lean();
-    
-    if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-      });
-    }
-
-    return new Response(JSON.stringify({ ...user, ...userInfo }), { status: 200 });
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-    });
+    filterUser = { email };
   }
+
+  const user = await User.findOne(filterUser).lean();
+  const userInfo = await UserInfo.findOne({ email: user.email }).lean();
+
+  return Response.json({ ...user, ...userInfo });
 }

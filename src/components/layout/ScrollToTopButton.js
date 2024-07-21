@@ -1,4 +1,5 @@
-"use client"
+// components/layout/ScrollToTopButton.js
+"use client";
 import { useState, useEffect } from 'react';
 import ChevronUp from '../icons/ChevronUp';
 
@@ -30,9 +31,10 @@ export default function ScrollToTopButton() {
   return isVisible ? (
     <button
       onClick={scrollToTop}
-      className="fixed bottom-4 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+      className="fixed bottom-4 right-4 p-2 w-10 rounded-full bg-blue-500 text-white shadow-lg hover:bg-blue-600 transition duration-300"
+      aria-label="Scroll to top"
     >
-      <ChevronUp />
+      <ChevronUp className="w-6 h-6" />
     </button>
   ) : null;
 }

@@ -63,9 +63,9 @@ export default function Header() {
       {/* Navigation Links */}
       <nav className="flex-1 flex flex-col gap-4 p-4 font-semibold text-center">
         <Link href="/" className="py-2 hover:bg-violet-700 rounded">Home</Link>
-        <Link href="/" className="py-2 hover:bg-violet-700 rounded">About Us</Link>
-        <Link href="/" className="py-2 hover:bg-violet-700 rounded">Schemes</Link>
-        <Link href="/" className="py-2 hover:bg-violet-700 rounded">Contact Us</Link>
+        <Link href="/#aboutus" className="py-2 hover:bg-violet-700 rounded">About Us</Link>
+        <Link href="/#schemes" className="py-2 hover:bg-violet-700 rounded">Schemes</Link>
+        <Link href="/#contactus" className="py-2 hover:bg-violet-700 rounded">Contact Us</Link>
       </nav>
 
       {/* Auth Links */}
